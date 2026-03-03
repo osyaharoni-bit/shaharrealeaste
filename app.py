@@ -57,7 +57,7 @@ CORS(app, resources={
 # ════════════════════════════════════════════════════════════════
 @app.route("/")
 def index():
-    return send_from_directory(BASE_DIR, "index_19.html")
+    return send_from_directory(BASE_DIR, "index.html")
 
 
 @app.route("/logo.png")
