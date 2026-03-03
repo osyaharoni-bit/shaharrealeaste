@@ -57,14 +57,8 @@ CORS(app, resources={
 # ════════════════════════════════════════════════════════════════
 @app.route("/")
 def index():
+    # שנה מ-index_19.html ל-index.html
     return send_from_directory(BASE_DIR, "index.html")
-
-
-@app.route("/logo.png")
-def logo():
-    if os.path.exists(os.path.join(BASE_DIR, "logo.png")):
-        return send_from_directory(BASE_DIR, "logo.png")
-    return "", 404
 
 
 @app.route("/<path:filename>")
