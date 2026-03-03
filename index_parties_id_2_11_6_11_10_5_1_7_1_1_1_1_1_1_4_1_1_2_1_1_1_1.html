@@ -137,7 +137,7 @@
   }
   /* Status bar at bottom of sidebar */
   .sidebar-footer {
-    margin-top: auto;
+    flex-shrink: 0;
     padding: 16px;
     border-top: 1px solid rgba(255,255,255,0.08);
   }
@@ -2469,6 +2469,7 @@
 </div>
 
 <nav id="sidebar">
+  <div style="flex:1;overflow-y:auto;overflow-x:hidden;min-height:0;">
   <div class="nav-section">מודולים</div>
 
   <div class="nav-item active" onclick="switchTab('onboarding')" id="nav-onboarding">
@@ -2525,6 +2526,7 @@
     <span class="icon">📐</span>
     <span>מבא״ת</span>
   </div>
+  </div>
 
   <div class="sidebar-footer">
     <div class="status-pill" style="margin-bottom:10px;">
@@ -2540,6 +2542,10 @@
       <span>הגדרות AI Copilot</span>
       <span id="ai-key-indicator" style="margin-right:auto;width:8px;height:8px;border-radius:50%;background:#ef4444;display:inline-block;flex-shrink:0;" title="מפתח API חסר"></span>
     </div>
+    <a href="mailto:support@legalflowos.app" class="nav-item-settings" style="color:var(--gold-light);text-decoration:none;">
+      <span style="font-size:1rem;">📧</span>
+      <span>תמיכה טכנית</span>
+    </a>
   </div>
 </nav>
 
