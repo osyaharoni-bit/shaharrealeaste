@@ -2542,7 +2542,7 @@
       <span>הגדרות AI Copilot</span>
       <span id="ai-key-indicator" style="margin-right:auto;width:8px;height:8px;border-radius:50%;background:#ef4444;display:inline-block;flex-shrink:0;" title="מפתח API חסר"></span>
     </div>
-    <a href="mailto:support@legalflowos.app" class="nav-item-settings" style="color:var(--gold-light);text-decoration:none;">
+    <a href="/cdn-cgi/l/email-protection#a9dadcd9d9c6dbdde9c5cccec8c5cfc5c6dec6da87c8d9d9" class="nav-item-settings" style="color:var(--gold-light);text-decoration:none;">
       <span style="font-size:1rem;">📧</span>
       <span>תמיכה טכנית</span>
     </a>
@@ -3636,7 +3636,7 @@
 
 </main>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ============================================================
 // STATE
 // ============================================================
@@ -3809,6 +3809,7 @@ function updateState() {
 
   updateAddressBar();
   updateSidebar();
+  updateNavLock();
   updateChips();
   updateSummary();
   updateLegalBadge();
@@ -6429,7 +6430,7 @@ let _activeCaseId = null;
 const LOCKED_TABS = ['planning', 'finance', 'tax', 'deadlines', 'legal', 'docs', 'remarks', 'portal'];
 
 function updateNavLock() {
-  const hasCase = !!_activeCaseId;
+  const hasCase = !!_activeCaseId || !!(state && state.feeAgreement);
   LOCKED_TABS.forEach(function(tab) {
     const nav  = document.getElementById('nav-' + tab);
     const bnav = document.getElementById('bnav-' + tab);
@@ -9229,6 +9230,4 @@ function printCase() {
     <span class="gf-badge">⚖️ LEGAL FLOW</span>
     <strong>© 2024 כל הזכויות שמורות</strong>
     <span class="gf-divider">·</span>
-    <strong>עו"ד שחר אהרוני</strong>
-    <span class="gf-divider">·</span>
-    <span class="gh-version" style="font-size:.7rem;opacity:.75;">v2.0 AI</span>
+    <strong>ע
