@@ -36,6 +36,7 @@ SERVER_IP = "185.241.6.63"     # כתובת השרת החיצוני
 HEADLESS  = True               # חובה בשרת Linux ללא GUI
 
 app = Flask(__name__, static_folder=BASE_DIR)
+app.config['MAX_CONTENT_LENGTH'] = 64 * 1024 * 1024  # 64 MB
 
 # ── CORS: מאפשר קריאות מהשרת החיצוני ──────────────────────────────────────
 CORS(app, resources={
@@ -57,8 +58,11 @@ CORS(app, resources={
 # ════════════════════════════════════════════════════════════════
 @app.route("/")
 def index():
-    # שנה מ-index_19.html ל-index.html
-    return send_from_directory(BASE_DIR, "index.html")
+    from flask import make_response
+    resp = make_response(send_from_directory(BASE_DIR, "index.html"))
+    resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
+    resp.headers["Pragma"] = "no-cache"
+    return resp
 
 
 @app.route("/<path:filename>")
