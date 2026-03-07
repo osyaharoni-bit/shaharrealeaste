@@ -495,6 +495,15 @@
     animation: spin 0.7s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
+  /* DD two-column responsive */
+  @media (max-width: 860px) {
+    #tab-duediligence [style*="grid-template-columns:1fr 1.2fr"] {
+      grid-template-columns: 1fr !important;
+    }
+    #tab-duediligence [style*="grid-template-columns:repeat(4,1fr)"] {
+      grid-template-columns: repeat(2,1fr) !important;
+    }
+  }
   /* GIS status */
   .gis-status {
     font-size: 0.78rem;
@@ -2440,6 +2449,9 @@
     <button class="bnav-item" id="bnav-planning" onclick="switchTab('planning')">
       <span class="bicon">🗺️</span>תכנון
     </button>
+    <button class="bnav-item" id="bnav-duediligence" onclick="switchTab('duediligence')">
+      <span class="bicon">🔍</span>נאותות
+    </button>
     <button class="bnav-item" id="bnav-finance" onclick="switchTab('finance')">
       <span class="bicon">🏦</span>מימון
     </button>
@@ -2479,6 +2491,10 @@
   <div class="nav-item" onclick="switchTab('planning')" id="nav-planning">
     <span class="icon">🗺️</span>
     <span>תכנון וקניין</span>
+  </div>
+  <div class="nav-item" onclick="switchTab('duediligence')" id="nav-duediligence">
+    <span class="icon">🔍</span>
+    <span>דו"ח בדיקת נאותות</span>
   </div>
   <div class="nav-item" onclick="switchTab('finance')" id="nav-finance">
     <span class="icon">🏦</span>
@@ -3115,6 +3131,18 @@
             onfocus="this.style.borderColor='#C5A059'"
             onblur="this.style.borderColor=this.value?'rgba(197,160,89,.5)':'var(--border)'"/>
         </div>
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:6px;">
+            תת חלקה
+          </label>
+          <input type="text" id="propTatChelka" placeholder="הקלד תת חלקה..."
+            inputmode="numeric"
+            oninput="state.tat_chelka=this.value.trim(); savePropState();"
+            style="background:#1E1E20;color:#F5F5F0;font-weight:700;font-size:1rem;
+              border:1.5px solid var(--border);transition:border-color .15s;"
+            onfocus="this.style.borderColor='#C5A059'"
+            onblur="this.style.borderColor=this.value?'rgba(197,160,89,.5)':'var(--border)'"/>
+        </div>
       </div>
       <div class="gis-status" id="gis-status">
         <span>הזן כתובת מלאה ולחץ Tab מחוץ לשדה מספר הבית לאחזור אוטומטי</span>
@@ -3149,6 +3177,16 @@
             border:none;box-shadow:0 2px 8px rgba(107,114,128,.25);"
           onmouseover="this.style.filter='brightness(1.15)';this.style.transform='translateY(-1px)'"
           onmouseout="this.style.filter='';this.style.transform=''">🔍 תיק בניין בגוגל</button>
+        <button class="btn" onclick="window.open('https://mekarkein-online.justice.gov.il/voucher/main','_blank')"
+          style="background:linear-gradient(135deg,#1e3a5f,#2d5282);color:#fff;font-weight:700;
+            border:none;box-shadow:0 2px 8px rgba(30,58,95,.3);"
+          onmouseover="this.style.filter='brightness(1.15)';this.style.transform='translateY(-1px)'"
+          onmouseout="this.style.filter='';this.style.transform=''">📄 הזמנת נסח טאבו</button>
+        <button class="btn" onclick="window.open('https://fileextractor.justice.gov.il/tabu','_blank')"
+          style="background:linear-gradient(135deg,#1e3a5f,#2d5282);color:#fff;font-weight:700;
+            border:none;box-shadow:0 2px 8px rgba(30,58,95,.3);"
+          onmouseover="this.style.filter='brightness(1.15)';this.style.transform='translateY(-1px)'"
+          onmouseout="this.style.filter='';this.style.transform=''">🏢 הזמנת קבצי בית משותף</button>
         <button class="btn btn-streetview" onclick="openStreetView()" id="sv-btn">
           <span class="sv-pegman">🧍</span> Street View
         </button>
@@ -3206,7 +3244,245 @@
         </div>
       </div>
     </div>
+
+    <!-- ══ חלק א׳: כפתור מעבר לבדיקת נאותות ══ -->
+    <div class="card" style="border-color:rgba(197,160,89,0.45);background:linear-gradient(135deg,rgba(197,160,89,0.08),rgba(197,160,89,0.02));">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+        <div>
+          <div style="font-size:0.93rem;font-weight:700;color:var(--text);margin-bottom:5px;">✅ סיימת לאסוף את נתוני הנכס?</div>
+          <div style="font-size:0.77rem;color:var(--muted);line-height:1.6;">
+            הכתובת, הגוש והחלקה שהוזנו יישמרו אוטומטית וישמשו<br/>
+            כעוגן בטבלת ההצלבה בדשבורד בדיקת הנאותות.
+          </div>
+        </div>
+        <button onclick="planningGoToDueDiligence()"
+          style="flex-shrink:0;padding:12px 22px;border-radius:12px;font-family:'Heebo',sans-serif;font-size:0.9rem;font-weight:800;border:none;cursor:pointer;background:linear-gradient(135deg,#C5A059,#A0813A);color:#111;box-shadow:0 4px 18px rgba(197,160,89,0.38);transition:all 0.2s ease;"
+          onmouseover="this.style.filter='brightness(1.1)';this.style.transform='translateY(-1px)'"
+          onmouseout="this.style.filter='';this.style.transform=''">
+          🔍 עבור לדו״ח בדיקת נאותות
+        </button>
+      </div>
+    </div>
+
   </div>
+
+  <!-- =========== TAB: DUE DILIGENCE =========== -->
+  <div id="tab-duediligence" class="tab-view" style="display:none;">
+    <div id="gate-duediligence"></div>
+
+    <!-- ══ חלק ב׳: פס נכס — נטען מ-localStorage ══ -->
+    <div id="dd-address-bar"
+      style="display:none;background:linear-gradient(135deg,rgba(197,160,89,0.1),rgba(197,160,89,0.03));border:1.5px solid rgba(197,160,89,0.32);border-radius:14px;padding:11px 16px;margin-bottom:16px;align-items:center;gap:12px;flex-wrap:wrap;">
+      <span style="font-size:1.2rem;flex-shrink:0;">📍</span>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:0.6rem;font-weight:700;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:2px;">נכס לבדיקה</div>
+        <div id="dd-address-title" style="font-size:0.9rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">—</div>
+      </div>
+      <div style="display:flex;gap:18px;flex-shrink:0;">
+        <div style="text-align:center;">
+          <div style="font-size:0.6rem;color:var(--muted);margin-bottom:1px;">גוש</div>
+          <div id="dd-bar-gush" style="font-size:0.85rem;font-weight:800;color:var(--gold);">—</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:0.6rem;color:var(--muted);margin-bottom:1px;">חלקה</div>
+          <div id="dd-bar-chelka" style="font-size:0.85rem;font-weight:800;color:var(--gold);">—</div>
+        </div>
+        <div id="dd-bar-tat-chelka-wrap" style="text-align:center;display:none;">
+          <div style="font-size:0.6rem;color:var(--muted);margin-bottom:1px;">תת חלקה</div>
+          <div id="dd-bar-tat-chelka" style="font-size:0.85rem;font-weight:800;color:var(--gold);">—</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:0.6rem;color:var(--muted);margin-bottom:1px;">מחיר</div>
+          <div id="dd-bar-price" style="font-size:0.85rem;font-weight:800;color:var(--gold);">—</div>
+        </div>
+      </div>
+      <button onclick="switchTab('planning')"
+        style="flex-shrink:0;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);color:var(--muted);font-size:0.7rem;font-weight:600;padding:5px 11px;border-radius:7px;cursor:pointer;font-family:'Heebo',sans-serif;transition:all 0.15s;"
+        onmouseover="this.style.background='rgba(197,160,89,0.14)';this.style.color='#C5A059'"
+        onmouseout="this.style.background='rgba(255,255,255,0.07)';this.style.color='var(--muted)'">
+        ← חזור לתכנון
+      </button>
+    </div>
+
+    <!-- ══ KPI STRIP ══ -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+
+      <div style="background:linear-gradient(135deg,rgba(197,160,89,0.13),rgba(197,160,89,0.04));border:1.5px solid rgba(197,160,89,0.35);border-radius:14px;padding:14px 16px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:8px;left:10px;font-size:2rem;opacity:0.09;line-height:1;">🔍</div>
+        <div style="font-size:0.63rem;font-weight:700;color:var(--muted);letter-spacing:0.07em;text-transform:uppercase;margin-bottom:5px;">סה"כ ממצאי AI</div>
+        <div id="dd-kpi-total" style="font-size:2rem;font-weight:900;color:var(--gold);line-height:1;">—</div>
+        <div style="font-size:0.68rem;color:var(--muted);margin-top:3px;">פערים שזוהו</div>
+      </div>
+
+      <div style="background:linear-gradient(135deg,rgba(239,68,68,0.11),rgba(239,68,68,0.03));border:1.5px solid rgba(239,68,68,0.32);border-radius:14px;padding:14px 16px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:8px;left:10px;font-size:2rem;opacity:0.09;line-height:1;">🚨</div>
+        <div style="font-size:0.63rem;font-weight:700;color:var(--muted);letter-spacing:0.07em;text-transform:uppercase;margin-bottom:5px;">קריטי</div>
+        <div id="dd-kpi-critical" style="font-size:2rem;font-weight:900;color:#f87171;line-height:1;">—</div>
+        <div style="font-size:0.68rem;color:var(--muted);margin-top:3px;">התראות קריטיות</div>
+      </div>
+
+      <div style="background:linear-gradient(135deg,rgba(245,158,11,0.11),rgba(245,158,11,0.03));border:1.5px solid rgba(245,158,11,0.32);border-radius:14px;padding:14px 16px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:8px;left:10px;font-size:2rem;opacity:0.09;line-height:1;">⚠️</div>
+        <div style="font-size:0.63rem;font-weight:700;color:var(--muted);letter-spacing:0.07em;text-transform:uppercase;margin-bottom:5px;">אזהרות</div>
+        <div id="dd-kpi-warnings" style="font-size:2rem;font-weight:900;color:#f59e0b;line-height:1;">—</div>
+        <div style="font-size:0.68rem;color:var(--muted);margin-top:3px;">אי-התאמות</div>
+      </div>
+
+      <div style="background:linear-gradient(135deg,rgba(34,197,94,0.09),rgba(34,197,94,0.02));border:1.5px solid rgba(34,197,94,0.28);border-radius:14px;padding:14px 16px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:8px;left:10px;font-size:2rem;opacity:0.09;line-height:1;">📂</div>
+        <div style="font-size:0.63rem;font-weight:700;color:var(--muted);letter-spacing:0.07em;text-transform:uppercase;margin-bottom:5px;">מסמכים</div>
+        <div id="dd-kpi-docs" style="font-size:2rem;font-weight:900;color:#4ade80;line-height:1;">0</div>
+        <div style="font-size:0.68rem;color:var(--muted);margin-top:3px;">הועלו לניתוח</div>
+      </div>
+
+    </div>
+
+    <!-- ══ TWO-COLUMN LAYOUT ══ -->
+    <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:20px;align-items:start;">
+
+      <!-- ════ RIGHT COLUMN — Upload & Docs ════ -->
+      <div>
+
+        <!-- Drag & Drop card -->
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-title" style="margin-bottom:14px;">📁 העלאת מסמכים לניתוח</div>
+
+          <!-- Drop Zone -->
+          <label for="dd-file-input" style="display:block;cursor:pointer;margin-bottom:14px;">
+          <div id="dd-dropzone"
+            ondragover="ddDragOver(event)"
+            ondragleave="ddDragLeave(event)"
+            ondrop="ddDrop(event)"
+            style="border:2px dashed rgba(197,160,89,0.38);border-radius:14px;padding:30px 18px 24px;text-align:center;cursor:pointer;transition:all 0.22s ease;background:rgba(197,160,89,0.025);user-select:none;">
+            <div id="dd-drop-icon" style="font-size:2.4rem;margin-bottom:8px;transition:transform 0.2s ease;">📂</div>
+            <div style="font-size:0.92rem;font-weight:700;color:var(--text);margin-bottom:4px;">גרור ושחרר מסמכים כאן</div>
+            <div style="font-size:0.75rem;color:var(--muted);margin-bottom:14px;">או לחץ לבחירת קבצים מהמחשב</div>
+            <div style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;">
+              <span style="background:rgba(197,160,89,0.13);border:1px solid rgba(197,160,89,0.32);color:var(--gold);font-size:0.62rem;font-weight:700;padding:3px 9px;border-radius:99px;">נסח טאבו</span>
+              <span style="background:rgba(197,160,89,0.13);border:1px solid rgba(197,160,89,0.32);color:var(--gold);font-size:0.62rem;font-weight:700;padding:3px 9px;border-radius:99px;">תעודת זהות</span>
+              <span style="background:rgba(197,160,89,0.13);border:1px solid rgba(197,160,89,0.32);color:var(--gold);font-size:0.62rem;font-weight:700;padding:3px 9px;border-radius:99px;">ארנונה</span>
+              <span style="background:rgba(197,160,89,0.13);border:1px solid rgba(197,160,89,0.32);color:var(--gold);font-size:0.62rem;font-weight:700;padding:3px 9px;border-radius:99px;">היתר בנייה</span>
+              <span style="background:rgba(197,160,89,0.13);border:1px solid rgba(197,160,89,0.32);color:var(--gold);font-size:0.62rem;font-weight:700;padding:3px 9px;border-radius:99px;">חוזה</span>
+              <span style="background:rgba(197,160,89,0.13);border:1px solid rgba(197,160,89,0.32);color:var(--gold);font-size:0.62rem;font-weight:700;padding:3px 9px;border-radius:99px;">שמאות</span>
+            </div>
+          </div>
+          </label>
+          <input type="file" id="dd-file-input" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx" style="display:none;" onchange="ddFilesAdded(this.files)"/>
+
+          <!-- Uploaded doc list -->
+          <div id="dd-doc-list" style="display:flex;flex-direction:column;gap:7px;"></div>
+
+          <!-- Scan CTA -->
+          <button id="dd-scan-btn" disabled onclick="ddStartScan()"
+            style="width:100%;margin-top:14px;padding:13px 16px;border-radius:12px;font-family:'Heebo',sans-serif;font-size:0.95rem;font-weight:800;border:none;cursor:not-allowed;transition:all 0.22s ease;background:rgba(58,58,60,0.8);color:#555;letter-spacing:0.02em;display:flex;align-items:center;justify-content:center;gap:8px;">
+            <span id="dd-scan-btn-text">סרוק ונתח מסמכים (AI) 🔍</span>
+          </button>
+        </div>
+
+        <!-- Notes & Recommendation card -->
+        <div class="card">
+          <div class="card-title" style="margin-bottom:14px;">📝 ממצאים והמלצה</div>
+          <div class="form-grid" style="margin-bottom:12px;">
+            <div class="form-group">
+              <label>תאריך בדיקה</label>
+              <input type="date" id="dd-date"/>
+            </div>
+            <div class="form-group">
+              <label>עורך הבדיקה</label>
+              <input type="text" id="dd-examiner" placeholder="שם עו״ד"/>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label>המלצת עורך הדין</label>
+            <select id="dd-recommendation" style="padding:9px 13px;border:1.5px solid var(--border);border-radius:9px;font-family:'Heebo',sans-serif;font-size:0.875rem;color:var(--text);background:#2C2C2E;width:100%;direction:rtl;">
+              <option value="">— בחר המלצה —</option>
+              <option value="proceed">✅ להמשיך בעסקה — ללא מניעה</option>
+              <option value="proceed-caution">⚠️ להמשיך בזהירות — עם תנאים</option>
+              <option value="pause">⏸️ להשהות — עד הסדרת ממצאים</option>
+              <option value="abort">🛑 לא להמשיך — סיכון גבוה</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:14px;">
+            <label>הערות נוספות</label>
+            <textarea id="dd-findings" rows="3" placeholder="הערות, תובנות ומסקנות..."
+              style="padding:9px 13px;border:1.5px solid var(--border);border-radius:9px;font-family:'Heebo',sans-serif;font-size:0.875rem;color:var(--text);background:#2C2C2E;width:100%;resize:vertical;direction:rtl;"></textarea>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="ddPrintReport()">🖨️ הפקת דו"ח</button>
+            <button class="btn btn-secondary" onclick="ddReset()">🔄 איפוס</button>
+          </div>
+        </div>
+
+      </div><!-- /right column -->
+
+      <!-- ════ LEFT COLUMN — AI Insights ════ -->
+      <div>
+
+        <!-- Red Flags / Traffic Light -->
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-title" style="justify-content:space-between;flex-wrap:wrap;gap:8px;">
+            <span>🚦 רמזור התראות — Red Flags</span>
+            <span id="dd-flag-counter"
+              style="font-size:0.68rem;font-weight:700;padding:4px 12px;border-radius:99px;background:rgba(255,255,255,0.07);color:var(--muted);white-space:nowrap;letter-spacing:0.03em;">
+              ממתין לסריקה
+            </span>
+          </div>
+
+          <!-- Empty state -->
+          <div id="dd-flags-empty" style="text-align:center;padding:30px 16px;">
+            <div style="font-size:2.6rem;margin-bottom:10px;opacity:0.3;">🔍</div>
+            <div style="font-size:0.82rem;color:var(--muted);line-height:1.65;">
+              העלה מסמכים ולחץ "סרוק ונתח מסמכים"<br/>כדי לזהות פערים ואי-התאמות בין המסמכים
+            </div>
+          </div>
+
+          <!-- Flags list — populated by JS -->
+          <div id="dd-flags-list" style="display:flex;flex-direction:column;gap:9px;"></div>
+        </div>
+
+        <!-- Cross-Reference Table -->
+        <div class="card">
+          <div class="card-title" style="justify-content:space-between;flex-wrap:wrap;gap:8px;">
+            <span>🔁 הצלבת נתונים רוחבית</span>
+            <span id="dd-xref-badge" style="display:none;font-size:0.65rem;font-weight:700;padding:3px 9px;border-radius:99px;background:rgba(197,160,89,0.15);color:var(--gold);">עוגן: נסח טאבו</span>
+          </div>
+
+          <!-- Empty state -->
+          <div id="dd-xref-empty" style="text-align:center;padding:24px 16px;">
+            <div style="font-size:2rem;margin-bottom:8px;opacity:0.3;">📊</div>
+            <div style="font-size:0.79rem;color:var(--muted);">הטבלה תתאכלס לאחר ניתוח המסמכים</div>
+          </div>
+
+          <!-- Table — populated by JS -->
+          <div id="dd-xref-wrap" style="display:none;overflow-x:auto;">
+            <table id="dd-xref-table" style="width:100%;border-collapse:collapse;font-size:0.78rem;">
+              <thead>
+                <tr style="border-bottom:2px solid rgba(197,160,89,0.28);">
+                  <th style="padding:9px 11px;text-align:right;color:var(--gold);font-size:0.68rem;font-weight:700;letter-spacing:0.04em;white-space:nowrap;">פרמטר</th>
+                  <th style="padding:9px 11px;text-align:center;color:var(--gold);font-size:0.68rem;font-weight:700;white-space:nowrap;">📜 נסח טאבו<br/><span style="color:var(--muted);font-weight:400;font-size:0.62rem;">(עוגן)</span></th>
+                  <th style="padding:9px 11px;text-align:center;color:var(--gold);font-size:0.68rem;font-weight:700;white-space:nowrap;">🏙️ ארנונה</th>
+                  <th style="padding:9px 11px;text-align:center;color:var(--gold);font-size:0.68rem;font-weight:700;white-space:nowrap;">🗺️ GovMap</th>
+                  <th style="padding:9px 11px;text-align:center;color:var(--gold);font-size:0.68rem;font-weight:700;white-space:nowrap;">📋 היתר</th>
+                  <th style="padding:9px 11px;text-align:center;color:var(--gold);font-size:0.68rem;font-weight:700;white-space:nowrap;">סטטוס</th>
+                </tr>
+              </thead>
+              <tbody id="dd-xref-body"></tbody>
+            </table>
+            <!-- Legend -->
+            <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;padding-top:10px;border-top:1px solid var(--border);">
+              <span style="display:flex;align-items:center;gap:5px;font-size:0.67rem;color:var(--muted);"><span style="width:9px;height:9px;border-radius:3px;background:#ef4444;display:inline-block;flex-shrink:0;"></span>פער קריטי</span>
+              <span style="display:flex;align-items:center;gap:5px;font-size:0.67rem;color:var(--muted);"><span style="width:9px;height:9px;border-radius:3px;background:#f59e0b;display:inline-block;flex-shrink:0;"></span>אזהרה</span>
+              <span style="display:flex;align-items:center;gap:5px;font-size:0.67rem;color:var(--muted);"><span style="width:9px;height:9px;border-radius:3px;background:#22c55e;display:inline-block;flex-shrink:0;"></span>תואם</span>
+              <span style="display:flex;align-items:center;gap:5px;font-size:0.67rem;color:var(--muted);"><span style="width:9px;height:9px;border-radius:3px;background:#3A3A3C;display:inline-block;flex-shrink:0;"></span>לא זמין</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /left column -->
+
+    </div><!-- /two-column grid -->
+
+  </div><!-- /tab-duediligence -->
 
   <!-- =========== TAB 3: FINANCE =========== -->
   <div id="tab-finance" class="tab-view" style="display:none;">
@@ -3695,6 +3971,7 @@ function closeSidebar() {
 const TABS = {
   onboarding: { title: '📋 פתיחת תיק',        sub: 'הגדרת עסקה חדשה ופרטי לקוח' },
   planning:   { title: '🗺️ תכנון וקניין',       sub: 'GIS, גוש/חלקה ובדיקות תכנוניות' },
+  duediligence: { title: '🔍 דו"ח בדיקת נאותות', sub: 'בדיקות מעמיקות לנכס ולצדדים לעסקה' },
   finance:    { title: '🏦 מימון',               sub: 'LTV, הון עצמי, משכנתאות ופריסת תשלומים' },
   tax:        { title: '🧮 מיסוי',               sub: 'מס רכישה ומס שבח — מחשבון דינמי לפי תפקיד' },
   deadlines:  { title: '📅 מועדים ותזכורות',     sub: 'לוח מועדים, ספירות לאחור וייצוא ליומן' },
@@ -3739,6 +4016,7 @@ function switchTab(tab) {
   if (tab === 'tax')       renderTax();
   if (tab === 'legal')     renderLegal();
   if (tab === 'planning')  renderPlanningGate();
+  if (tab === 'duediligence') ddInit();
   if (tab === 'docs')      docsInit();
   if (tab === 'deadlines') { renderGate('gate-deadlines'); dlRender(); }
   if (tab === 'remarks')   { renderGate('gate-remarks'); remarksInit(); }
@@ -6473,6 +6751,7 @@ function saveCase() {
     number:         state.number,
     gush:           state.gush,
     chelka:         state.chelka,
+    tat_chelka:     state.tat_chelka || '',
     openedAt:       state.openedAt instanceof Date ? state.openedAt.toISOString() : state.openedAt,
     // deadlines
     contractDate:   contractDateEl   ? contractDateEl.value   : '',
@@ -6580,6 +6859,7 @@ function loadCase(id) {
   set('propNumber',     snap.number || '');
   if (snap.gush)   { var gEl = document.getElementById('propGush');   if(gEl) gEl.value = snap.gush; }
   if (snap.chelka) { var cEl = document.getElementById('propChelka'); if(cEl) cEl.value = snap.chelka; }
+  if (snap.tat_chelka) { var tcEl = document.getElementById('propTatChelka'); if(tcEl) { tcEl.value = snap.tat_chelka; state.tat_chelka = snap.tat_chelka; } }
   set('feeAgreement',   snap.feeAgreement);
   set('powerOfAttorney', snap.powerOfAttorney);
   // Restore completion status
@@ -6717,7 +6997,7 @@ function createNewCase() {
   state.propertyType = '';
 
   // Reset property address fields
-  ['propCity','propStreet','propNumber','propGush','propChelka'].forEach(function(id){
+  ['propCity','propStreet','propNumber','propGush','propChelka','propTatChelka'].forEach(function(id){
     var el = document.getElementById(id); if(el) el.value = '';
   });
   _markManualGushChelka();
@@ -9196,7 +9476,721 @@ function printCase() {
 <button id="cp-fab" onclick="cpOpen()">🔑 כניסת לקוחות</button>
 
 <script>
-// ── Live Clock: time + Hebrew date + Gregorian date ───────────
+// ============================================================
+// DUE DILIGENCE MODULE v3  —  localStorage sync + AI Scan
+// ============================================================
+
+var _ddDocs     = [];      // { id, name, size, status }
+var _ddScanDone = false;
+
+// ── מפתח localStorage ────────────────────────────────────────
+var DD_LS_KEY = 'legalflow_propertyData_v1';
+
+// ── משתנים גלובליים לגוש/חלקה (עוגן להשוואה) ───────────────
+var _ddLS = {};            // כל הנתונים שנמשכו מ-localStorage
+
+// ============================================================
+// חלק א׳ — planningGoToDueDiligence
+// מופעלת מלחיצה על כפתור "עבור לדו״ח בדיקת נאותות" בלשונית התכנון
+// ============================================================
+function planningGoToDueDiligence() {
+  // 1. איסוף נתוני הנכס מהשדות הרלוונטיים
+  var city   = (document.getElementById('propCity')   || {}).value || '';
+  var street = (document.getElementById('propStreet') || {}).value || '';
+  var number = (document.getElementById('propNumber') || {}).value || '';
+  var gush   = (document.getElementById('propGush')   || {}).value || '';
+  var chelka = (document.getElementById('propChelka') || {}).value || '';
+  var price  = (typeof state !== 'undefined') ? (state.price || 0) : 0;
+  var address = [city, street, number].filter(Boolean).join(' ').trim();
+
+  // 2. שמירה כ-JSON ב-localStorage תחת השם DD_LS_KEY
+  var payload = {
+    address : address,
+    city    : city.trim(),
+    street  : street.trim(),
+    number  : number.trim(),
+    gush    : gush.trim(),
+    chelka  : chelka.trim(),
+    price   : price,
+    savedAt : Date.now()
+  };
+  try { localStorage.setItem(DD_LS_KEY, JSON.stringify(payload)); }
+  catch(e) { console.warn('DD LS save failed:', e); }
+
+  // 3. מעבר ללשונית בדיקת נאותות (single-page — switchTab)
+  switchTab('duediligence');
+}
+
+// ============================================================
+// חלק ב׳ §1 — טעינת נתונים מ-localStorage בעת פתיחת הלשונית
+// ============================================================
+function _ddLoadFromLS() {
+  try {
+    var raw = localStorage.getItem(DD_LS_KEY);
+    _ddLS = raw ? JSON.parse(raw) : {};
+  } catch(e) { _ddLS = {}; }
+
+  // Fallback: קרא ישירות מה-DOM אם LS ריק
+  if (!_ddLS.gush) {
+    var s = (typeof state !== 'undefined') ? state : {};
+    _ddLS.city    = (document.getElementById('propCity')   || {}).value || s.city   || '';
+    _ddLS.street  = (document.getElementById('propStreet') || {}).value || s.street || '';
+    _ddLS.number  = (document.getElementById('propNumber') || {}).value || s.number || '';
+    _ddLS.gush    = (document.getElementById('propGush')   || {}).value || s.gush   || '';
+    _ddLS.chelka     = (document.getElementById('propChelka')    || {}).value || s.chelka    || '';
+    _ddLS.tat_chelka = (document.getElementById('propTatChelka') || {}).value || s.tat_chelka || '';
+    _ddLS.price   = s.price || 0;
+    _ddLS.address = [_ddLS.city, _ddLS.street, _ddLS.number].filter(Boolean).join(' ').trim();
+  }
+}
+
+// ============================================================
+// חלק ב׳ §2 — הזרקת כתובת ונתונים לפס הנכס בראש הדשבורד
+// ============================================================
+function _ddRenderAddressBar() {
+  var bar     = document.getElementById('dd-address-bar');
+  var titleEl = document.getElementById('dd-address-title');
+  var gushEl  = document.getElementById('dd-bar-gush');
+  var chelEl  = document.getElementById('dd-bar-chelka');
+  var priceEl = document.getElementById('dd-bar-price');
+
+  var addr      = _ddLS.address || [_ddLS.city, _ddLS.street, _ddLS.number].filter(Boolean).join(' ') || '';
+  var gush      = _ddLS.gush       || '—';
+  var chelka    = _ddLS.chelka     || '—';
+  var tatChelka = _ddLS.tat_chelka || '';
+  var price     = _ddLS.price      || 0;
+
+  if (addr || gush !== '—') {
+    if (bar)     { bar.style.display = 'flex'; }
+    if (titleEl)   titleEl.textContent = addr || 'כתובת לא הוזנה';
+    if (gushEl)    gushEl.textContent  = gush;
+    if (chelEl)    chelEl.textContent  = chelka;
+    if (priceEl)   priceEl.textContent = price ? '₪' + price.toLocaleString('he-IL') : '—';
+    // תת חלקה — מציג רק אם הוזנה
+    var tatWrap = document.getElementById('dd-bar-tat-chelka-wrap');
+    var tatEl   = document.getElementById('dd-bar-tat-chelka');
+    if (tatWrap) tatWrap.style.display = tatChelka ? 'block' : 'none';
+    if (tatEl)   tatEl.textContent = tatChelka || '—';
+  }
+}
+
+// ── עזרים ────────────────────────────────────────────────────
+function _ddFmtSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1048576) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/1048576).toFixed(2) + ' MB';
+}
+function _ddDocIcon(name) {
+  var ext = (name || '').split('.').pop().toLowerCase();
+  var map = { pdf:'📄', jpg:'🖼️', jpeg:'🖼️', png:'🖼️', doc:'📝', docx:'📝', xls:'📊', xlsx:'📊' };
+  return map[ext] || '📎';
+}
+
+// ── Init (נקרא ע"י switchTab) ────────────────────────────────
+function ddInit() {
+  _ddScanDone = false;
+  _ddLoadFromLS();       // חלק ב׳ §1 — טעינה
+  _ddRenderAddressBar(); // חלק ב׳ §2 — הזרקה לכותרת
+  _ddUpdateKpi();
+}
+
+// ── Drag & Drop ───────────────────────────────────────────────
+function ddDragOver(e) {
+  e.preventDefault();
+  var dz = document.getElementById('dd-dropzone');
+  if (dz) { dz.style.background='rgba(197,160,89,0.11)'; dz.style.borderColor='rgba(197,160,89,0.8)'; dz.style.transform='scale(1.01)'; }
+  var ic = document.getElementById('dd-drop-icon');
+  if (ic) ic.style.transform = 'scale(1.15) translateY(-3px)';
+}
+function ddDragLeave(e) {
+  var dz = document.getElementById('dd-dropzone');
+  if (dz) { dz.style.background='rgba(197,160,89,0.025)'; dz.style.borderColor='rgba(197,160,89,0.38)'; dz.style.transform=''; }
+  var ic = document.getElementById('dd-drop-icon');
+  if (ic) ic.style.transform = '';
+}
+function ddDrop(e) {
+  e.preventDefault();
+  ddDragLeave(e);
+  if (e.dataTransfer && e.dataTransfer.files.length) ddFilesAdded(e.dataTransfer.files);
+}
+function ddFilesAdded(files) {
+  // קודם קוראים ושומרים את הקבצים
+  Array.prototype.forEach.call(files, function(f) {
+    _ddDocs.push({
+      id: 'ddoc_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
+      name: f.name,
+      size: f.size,
+      status: 'pending',
+      fileObj: f // שמירת הקובץ הפיזי בזיכרון לשליחה לשרת
+    });
+  });
+
+  // מעדכנים את הממשק
+  _ddRenderDocList();
+  _ddUpdateKpi();
+  _ddEnableScanBtn();
+
+  // מנקים את השדה רק בסוף, כדי לאפשר העלאה חוזרת בהמשך
+  var fi = document.getElementById('dd-file-input');
+  if (fi) fi.value = '';
+}
+
+// ── רשימת מסמכים ─────────────────────────────────────────────
+function _ddRenderDocList() {
+  var list = document.getElementById('dd-doc-list'); if (!list) return;
+  if (_ddDocs.length === 0) { list.innerHTML=''; return; }
+  list.innerHTML = _ddDocs.map(function(doc) {
+    var s;
+    if (doc.status==='pending')
+      s = '<span style="font-size:0.68rem;color:#9A9A98;font-weight:600;display:flex;align-items:center;gap:4px;"><span style="width:7px;height:7px;border-radius:50%;background:#9A9A98;display:inline-block;flex-shrink:0;"></span>ממתין לסריקה...</span>';
+    else if (doc.status==='scanning')
+      s = '<span style="font-size:0.68rem;color:#f59e0b;font-weight:700;display:flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:12px;border:2px solid rgba(245,158,11,0.3);border-top-color:#f59e0b;border-radius:50%;animation:spin 0.75s linear infinite;flex-shrink:0;"></span>סורק (AI)...</span>';
+    else
+      s = '<span style="font-size:0.68rem;color:#4ade80;font-weight:700;display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:#22c55e;color:#fff;font-size:0.55rem;line-height:14px;text-align:center;flex-shrink:0;">✓</span>סריקה הושלמה</span>';
+    return '<div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:#2C2C2E;border:1.5px solid #3A3A3C;border-radius:10px;">' +
+      '<span style="font-size:1.3rem;flex-shrink:0;">'+ _ddDocIcon(doc.name) +'</span>' +
+      '<div style="flex:1;min-width:0;"><div style="font-size:0.8rem;font-weight:600;color:#F5F5F0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="'+doc.name+'">'+doc.name+'</div><div style="font-size:0.68rem;color:#9A9A98;margin-top:1px;">'+_ddFmtSize(doc.size)+'</div></div>' +
+      '<div style="flex-shrink:0;">'+s+'</div>' +
+      (doc.status==='pending'?'<button onclick="_ddRemoveDoc(\''+doc.id+'\')" style="background:none;border:none;color:#505052;font-size:0.9rem;cursor:pointer;padding:2px 4px;border-radius:4px;flex-shrink:0;" onmouseover="this.style.color=\'#f87171\'" onmouseout="this.style.color=\'#505052\'">✕</button>':'') +
+    '</div>';
+  }).join('');
+}
+function _ddRemoveDoc(id) {
+  _ddDocs = _ddDocs.filter(function(d){ return d.id!==id; });
+  _ddRenderDocList(); _ddUpdateKpi();
+  if (_ddDocs.length===0) _ddDisableScanBtn();
+}
+
+// ── כפתור סריקה ──────────────────────────────────────────────
+function _ddEnableScanBtn() {
+  var btn = document.getElementById('dd-scan-btn'); if (!btn) return;
+  btn.disabled=false; btn.style.background='linear-gradient(135deg,#C5A059,#A0813A)';
+  btn.style.color='#111'; btn.style.cursor='pointer'; btn.style.boxShadow='0 4px 18px rgba(197,160,89,0.35)'; btn.style.border='none';
+}
+function _ddDisableScanBtn() {
+  var btn = document.getElementById('dd-scan-btn'); if (!btn) return;
+  btn.disabled=true; btn.style.background='rgba(58,58,60,0.8)'; btn.style.color='#555'; btn.style.cursor='not-allowed'; btn.style.boxShadow='none';
+}
+function _ddLockScanBtn() {
+  var btn=document.getElementById('dd-scan-btn'), txt=document.getElementById('dd-scan-btn-text');
+  if (!btn) return;
+  btn.disabled=true; btn.style.cursor='not-allowed'; btn.style.background='linear-gradient(135deg,#6b4c1e,#A0813A)';
+  if (txt) txt.innerHTML='<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.75s linear infinite;margin-left:6px;"></span> מנתח מסמכים...';
+}
+
+// ── סריקה ראשית (מעודכן לשרת אמיתי) ────────────────────────
+async function ddStartScan() {
+  if (_ddDocs.length === 0) return;
+
+  // רענון נתוני LS רגע לפני הסריקה
+  _ddLoadFromLS();
+  _ddRenderAddressBar();
+
+  _ddDocs.forEach(function(d){ if (d.status === 'pending') d.status = 'scanning'; });
+  _ddRenderDocList();
+  _ddLockScanBtn();
+
+  // אריזת הקבצים למבנה שרת
+  const formData = new FormData();
+  _ddDocs.forEach(doc => {
+    if (doc.fileObj) {
+      formData.append('files', doc.fileObj);
+    }
+  });
+
+  try {
+    // שליחה לשרת המקומי
+    const response = await fetch('http://127.0.0.1:5000/api/scan-documents', {
+      method: 'POST',
+      body: formData
+    });
+
+    if (!response.ok) {
+      throw new Error('שגיאת שרת או שרת לא זמין');
+    }
+
+    const resultData = await response.json();
+    console.log("תשובה מהשרת התקבלה:", resultData);
+
+    // עדכון הממשק להצלחה
+    _ddDocs.forEach(function(d){ d.status = 'done'; });
+    _ddRenderDocList();
+    _ddScanDone = true;
+
+    // העבר נתוני טאבו + ארנונה בנפרד לפי מה שהשרת החזיר
+    _ddInjectResults(resultData, resultData.arnona || null);
+    _ddUpdateKpi();
+
+    var btn = document.getElementById('dd-scan-btn'), txt = document.getElementById('dd-scan-btn-text');
+    if (btn) { btn.disabled=false; btn.style.background='linear-gradient(135deg,#2C2C2E,#3A3A3C)'; btn.style.color='#C5A059'; btn.style.cursor='pointer'; btn.style.boxShadow='none'; btn.style.border='1.5px solid rgba(197,160,89,0.4)'; }
+    if (txt) txt.innerHTML = '🔄 סרוק מחדש';
+
+  } catch (error) {
+    console.error("שגיאה בסריקה:", error);
+
+    var btn = document.getElementById('dd-scan-btn'), txt = document.getElementById('dd-scan-btn-text');
+    if (btn) {
+      btn.disabled = false;
+      btn.style.background = '#ef4444';
+      btn.style.color = '#fff';
+      btn.style.cursor = 'pointer';
+    }
+    if (txt) txt.innerHTML = '❌ שגיאת חיבור לשרת (נסה שוב)';
+
+    // החזרת הסטטוס לממתין
+    _ddDocs.forEach(function(d){ if (d.status === 'scanning') d.status = 'pending'; });
+    _ddRenderDocList();
+  }
+}
+
+// ============================================================
+// חלק ב׳ §3 — הזרקת תוצאות AI + טבלת הצלבה עם נתוני GovMap מ-LS
+// ============================================================
+// ── Cache גלובלי לשמירת נתונים בין סריקות ────────────────────
+var _ddTabuCache   = {};
+var _ddArnonaCache = {};
+
+function _ddInjectResults(serverData, arnonaData) {
+  var city   = _ddLS.city   || 'לא הוזן';
+  var gush   = _ddLS.gush   || '';
+  var chelka    = _ddLS.chelka     || '';
+  var tatChelka = _ddLS.tat_chelka || '';
+  var price  = _ddLS.price  || 0;
+  var priceStr = price ? '₪' + Number(price).toLocaleString('he-IL') : 'לא הוזן';
+
+  var ai      = (serverData && serverData.ai_analysis) ? serverData.ai_analysis : {};
+  var docType = (ai.document_type || '').trim();
+  var isArnona = (docType === 'ארנונה');
+
+  // ── שמור לcache לפי סוג מסמך ─────────────────────────────────
+  // אם השרת החזיר arnona בנפרד — השתמש בו ישירות
+  if (arnonaData && Object.keys(arnonaData).length > 0) {
+    _ddArnonaCache = arnonaData;
+  } else if (docType === 'ארנונה') {
+    _ddArnonaCache = ai;
+  }
+  // עמודת טאבו — רק מנסח טאבו אמיתי, לא מכל מסמך
+  if (docType === 'טאבו') {
+    _ddTabuCache = ai;
+  }
+
+  // ── נתוני טאבו (מcache — רק אם נסרק נסח) ────────────────────
+  var t        = _ddTabuCache;
+  var hasTabu  = (t.document_type === 'טאבו') && Object.keys(t).length > 0;
+
+  var tabuGush   = hasTabu ? (t.gush   || '—') : '— לא נסרק';
+  var tabuChelka = hasTabu ? (t.helka  || '—') : '— לא נסרק';
+  var tabuArea   = hasTabu ? (parseFloat(t.area) || 0) : 0;
+  var tabuAreaStr= tabuArea ? tabuArea + ' מ"ר' : (hasTabu ? '—' : '— לא נסרק');
+  var tabuParking= hasTabu ? ((t.parking || 'לא') + '') : 'na';
+  var tabuStorage= hasTabu ? ((t.storage || 'לא') + '') : 'na';
+  // תאימות לאחור: אם הAPI החזיר encumbrances מאוחד — פרסר לשדות נפרדים
+  var _rawEncumb = hasTabu ? ((t.encumbrances || '') + '') : '';
+  var _mortgageBase = hasTabu ? ((t.mortgage || '') + '') : '';
+  var _lienBase     = hasTabu ? ((t.lien     || '') + '') : '';
+  var _caveatBase   = hasTabu ? ((t.caveat   || '') + '') : '';
+
+  // אם אין שדות נפרדים אבל יש encumbrances מאוחד — חלץ
+  if (_rawEncumb && _rawEncumb !== 'לא' && !_mortgageBase && !_lienBase && !_caveatBase) {
+    var _enc = _rawEncumb.toLowerCase();
+    if (_enc.includes('משכנת') || _enc.includes('שעבוד')) {
+      _mortgageBase = _rawEncumb.split(',').filter(function(s){
+        var sl=s.toLowerCase(); return sl.includes('משכנת')||sl.includes('שעבוד');
+      }).join(', ') || _rawEncumb;
+    }
+    if (_enc.includes('עיקול')) {
+      _lienBase = _rawEncumb.split(',').filter(function(s){
+        return s.toLowerCase().includes('עיקול');
+      }).join(', ') || _rawEncumb;
+    }
+    if (_enc.includes('הערה') || _enc.includes('אזהרה')) {
+      _caveatBase = _rawEncumb.split(',').filter(function(s){
+        var sl=s.toLowerCase(); return sl.includes('הערה')||sl.includes('אזהרה');
+      }).join(', ') || _rawEncumb;
+    }
+    // אם לא זוהה סוג ספציפי — שים הכל במשכנתא כברירת מחדל
+    if (!_mortgageBase && !_lienBase && !_caveatBase) _mortgageBase = _rawEncumb;
+  }
+
+  var tabuMortgage = hasTabu ? (_mortgageBase || 'לא') : 'na';
+  var tabuLien     = hasTabu ? (_lienBase     || 'לא') : 'na';
+  var tabuCaveat   = hasTabu ? (_caveatBase   || 'לא') : 'na';
+  var tabuEncumb   = hasTabu ? (_rawEncumb || _mortgageBase || _lienBase || _caveatBase || 'לא') : 'na';
+  var tabuOwners = hasTabu ? (t.owners_or_payers || t.owners || '—') : '— לא נסרק';
+  // בעלות מרובה — הפרד שמות לשורות (arnPayerDisplay מחושב אחרי הגדרת arnPayer)
+  var tabuOwnersDisplay = (tabuOwners !== '— לא נסרק' && tabuOwners.includes(','))
+    ? tabuOwners.split(',').map(function(s){return s.trim();}).filter(Boolean).join('<br/>')
+    : tabuOwners;
+
+  // ── נתוני ארנונה (מcache) ─────────────────────────────────────
+  var a         = _ddArnonaCache;
+  var arnArea   = parseFloat(a.area) || 0;
+  var arnAreaStr= arnArea ? arnArea + ' מ"ר' : '— לא נסרק';
+  var arnAddr   = a.address            || '— לא נסרק';
+  var arnPayer  = a.owners_or_payers   || '— לא נסרק';
+  var arnPayerDisplay = (arnPayer && arnPayer !== '— לא נסרק' && arnPayer.includes(','))
+    ? arnPayer.split(',').map(function(s){return s.trim();}).filter(Boolean).join('<br/>')
+    : arnPayer;
+  var arnGush   = a.gush               || '—';
+  var arnChelka = a.helka              || '—';
+  var arnTotal  = a.total_to_pay
+    ? '₪' + Number(a.total_to_pay).toLocaleString('he-IL')
+    : '— לא נסרק';
+  var hasArnona = Object.keys(a).length > 0;
+
+  // ── GovMap (מנתוני תכנון) ─────────────────────────────────────
+  var govGush   = gush   || '—';
+  var govChelka = chelka || '—';
+
+  // ── השוואות ───────────────────────────────────────────────────
+  var gushMatch   = gush   && tabuGush   !== '—' && gush.trim()   === String(tabuGush).trim();
+  var chelkaMatch = chelka && tabuChelka !== '—' && chelka.trim() === String(tabuChelka).trim();
+  var areaGap     = (tabuArea > 0 && arnArea > 0) ? +(Math.abs(arnArea - tabuArea).toFixed(2)) : 0;
+  var areaGapPct  = (tabuArea > 0 && areaGap > 0) ? Math.round(areaGap / tabuArea * 100) : 0;
+  // סף אזהרה: פער מעל 10% = קריטי (אדום), עד 10% = אזהרה (צהוב)
+  var areaStatus  = (tabuArea > 0 && arnArea > 0) ? (areaGap === 0 ? 'ok' : areaGapPct > 10 ? 'critical' : 'warn') : 'na';
+  var hasMortgage = tabuMortgage && tabuMortgage !== 'לא' && tabuMortgage !== '—' && tabuMortgage !== 'null' && tabuMortgage !== 'na';
+  var hasLien     = tabuLien     && tabuLien     !== 'לא' && tabuLien     !== '—' && tabuLien     !== 'null' && tabuLien     !== 'na';
+  var hasCaveat   = tabuCaveat   && tabuCaveat   !== 'לא' && tabuCaveat   !== '—' && tabuCaveat   !== 'null' && tabuCaveat   !== 'na';
+  var hasEncumb   = hasMortgage || hasLien || hasCaveat || (tabuEncumb && tabuEncumb !== 'לא' && tabuEncumb !== '—' && tabuEncumb !== 'null' && tabuEncumb !== 'na');
+
+  // ── Red Flags ─────────────────────────────────────────────────
+  var flags = [];
+
+  // 1. שטחים
+  if (tabuArea > 0 && arnArea > 0) {
+    flags.push({
+      level: areaStatus,
+      title: areaGap === 0
+        ? '✅ שטחים תואמים — טאבו וארנונה זהים'
+        : areaGapPct > 10
+          ? '🔴 פער שטחים חמור (מעל 10%) — חשד לחריגת בנייה'
+          : '⚠️ פער שטחים קל (עד 10%) — מומלץ לבדוק',
+      detail: 'שטח טאבו: ' + tabuAreaStr + ' · שטח ארנונה: ' + arnAreaStr +
+        (areaGap > 0 ? ' · פער: ' + areaGap + ' מ"ר (' + areaGapPct + '%)' +
+          (areaGapPct > 10
+            ? ' — מעל הסף הקריטי של 10%! חשד ממשי לחריגת בנייה בלתי מתועדת.'
+            : ' — פחות מ-10%, ייתכן הבדל מדידה.') : ''),
+      action: areaGap === 0 ? '' : areaGapPct > 10
+        ? 'נדרש: מדידה מחדש ע"י מודד מוסמך + בדיקת היתר בנייה'
+        : 'מומלץ: בדיקת מדידות מול גורם מוסמך'
+    });
+  } else {
+    flags.push({ level:'warn', title:'טרם נסרקו שני המסמכים', detail:'יש לסרוק גם נסח טאבו וגם טופס ארנונה להשלמת ההשוואה.', action:'' });
+  }
+
+  // 2. גוש/חלקה
+  flags.push({
+    level: (!gush || !chelka) ? 'warn' : (gushMatch && chelkaMatch) ? 'ok' : 'critical',
+    title: 'זיהוי גוש וחלקה',
+    detail: 'גוש בתכנון: ' + (gush||'—') + ' · גוש בנסח: ' + tabuGush + ' ' + (gushMatch?'✓':'✗') +
+            ' | חלקה בתכנון: ' + (chelka||'—') + ' · חלקה בנסח: ' + tabuChelka + ' ' + (chelkaMatch?'✓':'✗'),
+    action: (!gushMatch || !chelkaMatch) && gush ? 'נדרש: אימות מול לשכת רישום המקרקעין' : (!gush ? 'נדרש: הזן גוש וחלקה בדף התכנון' : '')
+  });
+
+  // 3. שעבודים — שלושה flags נפרדים
+  flags.push({
+    level: hasMortgage ? 'critical' : (hasTabu ? 'ok' : 'warn'),
+    title: hasMortgage ? '🔴 משכנתא / שעבוד רשום' : (hasTabu ? '✅ אין משכנתא רשומה' : 'נסח טאבו טרם נסרק'),
+    detail: hasMortgage ? 'פרטים: ' + tabuMortgage : (hasTabu ? 'לא נמצאה משכנתא או שעבוד בנסח.' : 'סרוק נסח טאבו לבדיקת משכנתאות.'),
+    action: hasMortgage ? 'נדרש: בדיקת יתרת חוב ומחיקת משכנתא לפני העברת בעלות' : ''
+  });
+  flags.push({
+    level: hasLien ? 'critical' : (hasTabu ? 'ok' : 'warn'),
+    title: hasLien ? '🔴 עיקול רשום על הנכס' : (hasTabu ? '✅ אין עיקול רשום' : 'נסח טאבו טרם נסרק'),
+    detail: hasLien ? 'פרטים: ' + tabuLien : (hasTabu ? 'לא נמצא עיקול בנסח.' : 'סרוק נסח טאבו לבדיקת עיקולים.'),
+    action: hasLien ? 'נדרש: פנייה לרשם ההוצאה לפועל לבירור + בירור מול עו"ד' : ''
+  });
+  flags.push({
+    level: hasCaveat ? 'warn' : (hasTabu ? 'ok' : 'warn'),
+    title: hasCaveat ? '⚠️ הערת אזהרה רשומה' : (hasTabu ? '✅ אין הערות אזהרה' : 'נסח טאבו טרם נסרק'),
+    detail: hasCaveat ? 'פרטים: ' + tabuCaveat : (hasTabu ? 'לא נמצאו הערות אזהרה בנסח.' : 'סרוק נסח טאבו לבדיקת הערות.'),
+    action: hasCaveat ? 'מומלץ: בדיקת מהות ההערה ומשמעותה המשפטית' : ''
+  });
+
+  // 4. ארנונה — סה"כ לתשלום
+  if (hasArnona && a.total_to_pay) {
+    flags.push({ level:'ok', title:'ארנונה — סה"כ לתשלום', detail:'סה"כ לתשלום: ' + arnTotal + ' | מחזיק: ' + arnPayer, action:'' });
+  }
+
+  // 5. מחיר עסקה
+  flags.push({
+    level: 'warning',
+    title: price > 0 ? 'שווי שמאי מול מחיר עסקה' : 'מחיר עסקה לא הוזן',
+    detail: price > 0
+      ? 'מחיר שהוזן: ' + priceStr + ' · שומת AI: ₪' + Math.round(price*0.91).toLocaleString('he-IL') + ' · פער ~9% מעל שווי שוק.'
+      : 'לא ניתן להשוות לשווי שוק ללא מחיר.',
+    action: price > 0 ? 'מומלץ: שמאות מוסמכת' : 'נדרש: הזן מחיר עסקה בעמוד פתיחת תיק'
+  });
+
+  var flagsEl=document.getElementById('dd-flags-list'), emptyEl=document.getElementById('dd-flags-empty'), counterEl=document.getElementById('dd-flag-counter');
+  if (emptyEl) emptyEl.style.display='none';
+  var critCount=0, warnCount=0;
+  if (flagsEl) {
+    flagsEl.innerHTML = flags.map(function(f) {
+      var isCrit=f.level==='critical', isWarn=(f.level==='warning'||f.level==='warn'), isOk=f.level==='ok';
+      if(isCrit) critCount++; if(isWarn) warnCount++;
+      var bg=isCrit?'rgba(239,68,68,0.09)':isWarn?'rgba(245,158,11,0.09)':'rgba(34,197,94,0.07)';
+      var border=isCrit?'rgba(239,68,68,0.35)':isWarn?'rgba(245,158,11,0.35)':'rgba(34,197,94,0.28)';
+      var dot=isCrit?'#ef4444':isWarn?'#f59e0b':'#22c55e';
+      var label=isCrit?'🔴 קריטי':isWarn?'🟡 אזהרה':'🟢 תקין';
+      var lbg=isCrit?'rgba(239,68,68,0.18)':isWarn?'rgba(245,158,11,0.18)':'rgba(34,197,94,0.15)';
+      var lcolor=isCrit?'#f87171':isWarn?'#fbbf24':'#4ade80';
+      return '<div data-level="'+f.level+'" style="background:'+bg+';border:1.5px solid '+border+';border-radius:12px;padding:13px 15px;">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">' +
+          '<div style="display:flex;align-items:center;gap:8px;"><span style="width:8px;height:8px;border-radius:50%;background:'+dot+';box-shadow:0 0 6px '+dot+';flex-shrink:0;display:inline-block;"></span><span style="font-size:0.82rem;font-weight:700;color:#F5F5F0;">'+f.title+'</span></div>' +
+          '<span style="font-size:0.62rem;font-weight:700;padding:2px 8px;border-radius:99px;background:'+lbg+';color:'+lcolor+';white-space:nowrap;">'+label+'</span>' +
+        '</div>' +
+        '<div style="font-size:0.76rem;color:#9A9A98;line-height:1.55;margin-bottom:'+(f.action?'7px':'0')+';">'+f.detail+'</div>' +
+        (f.action?'<div style="font-size:0.71rem;font-weight:700;color:'+lcolor+';border-top:1px solid '+border+';padding-top:6px;margin-top:2px;">'+f.action+'</div>':'') +
+      '</div>';
+    }).join('');
+  }
+
+  if (counterEl) {
+    counterEl.textContent = critCount>0 ? 'נמצאו '+critCount+' פערים קריטיים'+(warnCount>0?' + '+warnCount+' אזהרות':'') : (warnCount>0?'נמצאו '+warnCount+' אזהרות':'✅ לא נמצאו פערים');
+    counterEl.style.background = critCount>0?'rgba(239,68,68,0.18)':warnCount>0?'rgba(245,158,11,0.18)':'rgba(34,197,94,0.15)';
+    counterEl.style.color = critCount>0?'#f87171':warnCount>0?'#fbbf24':'#4ade80';
+  }
+
+  // ── טבלת הצלבה — עמודת GovMap מוזנת מ-_ddLS (localStorage) ──
+  var xrefWrap=document.getElementById('dd-xref-wrap'), xrefEmpty=document.getElementById('dd-xref-empty');
+  var xrefBadge=document.getElementById('dd-xref-badge'), xrefBody=document.getElementById('dd-xref-body');
+  if (xrefEmpty) xrefEmpty.style.display='none';
+  if (xrefWrap)  xrefWrap.style.display='';
+  if (xrefBadge) xrefBadge.style.display='inline-block';
+
+  function _cell(val,st) {
+    var col=st==='ok'?'#4ade80':st==='warn'?'#fbbf24':st==='critical'?'#f87171':'#505052';
+    var bg =st==='ok'?'rgba(34,197,94,0.1)':st==='warn'?'rgba(245,158,11,0.1)':st==='critical'?'rgba(239,68,68,0.1)':'transparent';
+    var isLong = val && val.replace(/<[^>]+>/g,'').length > 30;
+    var ws = isLong ? 'white-space:normal;word-break:break-word;text-align:right;' : 'white-space:nowrap;';
+    return '<td style="padding:8px 11px;text-align:center;max-width:220px;"><span style="background:'+bg+';color:'+col+';font-weight:700;font-size:0.75rem;padding:3px 8px;border-radius:6px;display:inline-block;'+ws+'">'+val+'</span></td>';
+  }
+  function _statusCell(st) {
+    var m={ok:['✅ תואם','#4ade80','rgba(34,197,94,0.12)'],warn:['⚠️ אזהרה','#fbbf24','rgba(245,158,11,0.12)'],critical:['🔴 פער קריטי','#f87171','rgba(239,68,68,0.12)'],na:['— לא זמין','#505052','transparent']};
+    var s=m[st]||m.na;
+    return '<td style="padding:8px 11px;text-align:center;"><span style="background:'+s[2]+';color:'+s[1]+';font-weight:700;font-size:0.68rem;padding:3px 9px;border-radius:99px;white-space:nowrap;">'+s[0]+'</span></td>';
+  }
+
+  // ── טבלת הצלבה — עמודת טאבו ריקה אם לא נסרק נסח ──────────────
+  var parkingStr = !hasTabu ? '— לא נסרק' : (tabuParking==='כן' ? '✓ כן' : (tabuParking==='לא' ? '✗ לא' : '—'));
+  var storageStr = !hasTabu ? '— לא נסרק' : (tabuStorage==='כן' ? '✓ כן' : (tabuStorage==='לא' ? '✗ לא' : '—'));
+  var encumbStr  = !hasTabu ? '— לא נסרק' : (hasEncumb ? '⚠️ ' + tabuEncumb.substring(0,20) : '✓ אין');
+
+  var rows = [
+    { label:'שטח (מ"ר)',
+      tabu:   tabuArea ? tabuAreaStr : '— לא נסרק',
+      arnona: arnAreaStr,
+      govmap: '—',
+      permit: '—',
+      ts: tabuArea ? 'ok' : 'na',
+      as: hasArnona ? areaStatus : 'na',
+      gs: 'na', ps: 'na',
+      row: areaStatus },
+
+    { label:'גוש',
+      tabu:   tabuGush,
+      arnona: arnGush !== '—' ? arnGush + (arnGush===tabuGush?' ✓':' ✗') : '—',
+      govmap: govGush + (gush ? (gush.trim()===String(tabuGush).trim()?' ✓':' ✗') : ' ?'),
+      permit: '—',
+      ts: hasTabu ? 'ok' : 'na',
+      as: hasArnona && arnGush!=='—' ? (arnGush===String(tabuGush)?'ok':'critical') : 'na',
+      gs: gush ? (gushMatch?'ok':'critical') : 'warn',
+      ps: 'na',
+      row: gushMatch ? 'ok' : (gush ? 'critical' : 'warn') },
+
+    { label:'חלקה',
+      tabu:   tabuChelka,
+      arnona: arnChelka !== '—' ? arnChelka + (arnChelka===tabuChelka?' ✓':' ✗') : '—',
+      govmap: govChelka + (chelka ? (chelka.trim()===String(tabuChelka).trim()?' ✓':' ✗') : ' ?'),
+      permit: '—',
+      ts: hasTabu ? 'ok' : 'na',
+      as: hasArnona && arnChelka!=='—' ? (arnChelka===String(tabuChelka)?'ok':'critical') : 'na',
+      gs: chelka ? (chelkaMatch?'ok':'critical') : 'warn',
+      ps: 'na',
+      row: chelkaMatch ? 'ok' : (chelka ? 'critical' : 'warn') },
+
+    { label:'תת חלקה',
+      tabu:   hasTabu ? (t.tat_helka || '—') : '— לא נסרק',
+      arnona: '—',
+      govmap: '—', permit: '—',
+      ts: hasTabu && t.tat_helka ? 'ok' : 'na',
+      as: 'na', gs: 'na', ps: 'na',
+      row: (tatChelka && hasTabu && t.tat_helka)
+        ? (String(tatChelka).trim() === String(t.tat_helka).trim() ? 'ok' : 'warn')
+        : (tatChelka ? 'ok' : 'na') },
+
+    { label:'הצמדות חניה',
+      tabu:   parkingStr,
+      arnona: '— לא רלוונטי',
+      govmap: '—', permit: '—',
+      ts: hasTabu ? (tabuParking==='כן'?'ok':'warn') : 'na',
+      as: 'na', gs: 'na', ps: 'na',
+      row: hasTabu ? (tabuParking==='כן'?'ok':'warn') : 'na' },
+
+    { label:'הצמדות מחסן',
+      tabu:   storageStr,
+      arnona: '— לא רלוונטי',
+      govmap: '—', permit: '—',
+      ts: hasTabu ? (tabuStorage==='כן'?'ok':'warn') : 'na',
+      as: 'na', gs: 'na', ps: 'na',
+      row: hasTabu ? (tabuStorage==='כן'?'ok':'warn') : 'na' },
+
+    { label:'משכנתא / שעבוד',
+      tabu: !hasTabu ? '— לא נסרק' : (hasMortgage ? '⚠️ ' + tabuMortgage.substring(0,25) : '✓ אין'),
+      arnona: '—', govmap: '—', permit: '—',
+      ts: hasTabu ? (hasMortgage?'critical':'ok') : 'na',
+      as: 'na', gs: 'na', ps: 'na',
+      row: hasTabu ? (hasMortgage?'critical':'ok') : 'na' },
+
+    { label:'עיקול',
+      tabu: !hasTabu ? '— לא נסרק' : (hasLien ? '⚠️ ' + tabuLien.substring(0,25) : '✓ אין'),
+      arnona: '—', govmap: '—', permit: '—',
+      ts: hasTabu ? (hasLien?'critical':'ok') : 'na',
+      as: 'na', gs: 'na', ps: 'na',
+      row: hasTabu ? (hasLien?'critical':'ok') : 'na' },
+
+    { label:'הערת אזהרה',
+      tabu: !hasTabu ? '— לא נסרק' : (hasCaveat ? '⚠️ ' + tabuCaveat.substring(0,25) : '✓ אין'),
+      arnona: '—', govmap: '—', permit: '—',
+      ts: hasTabu ? (hasCaveat?'warn':'ok') : 'na',
+      as: 'na', gs: 'na', ps: 'na',
+      row: hasTabu ? (hasCaveat?'warn':'ok') : 'na' },
+
+    { label:'כתובת נכס',
+      tabu:   '—',
+      arnona: arnAddr,
+      govmap: '—', permit: '—',
+      ts: 'na',
+      as: hasArnona && a.address ? 'ok' : 'na',
+      gs: 'na', ps: 'na',
+      row: hasArnona && a.address ? 'ok' : 'na' },
+
+    { label:'סה"כ ארנונה',
+      tabu:   '—',
+      arnona: arnTotal,
+      govmap: '—', permit: '—',
+      ts: 'na',
+      as: hasArnona && a.total_to_pay ? 'ok' : 'na',
+      gs: 'na', ps: 'na',
+      row: hasArnona && a.total_to_pay ? 'ok' : 'na' },
+
+    { label:'בעלות / מחזיק',
+      tabu:   tabuOwnersDisplay,
+      arnona: arnPayerDisplay,
+      govmap: '—', permit: '—',
+      ts: hasTabu ? 'ok' : 'na',
+      as: hasArnona && a.owners_or_payers ? 'ok' : 'na',
+      gs: 'na', ps: 'na',
+      row: (hasTabu && hasArnona && a.owners_or_payers)
+        ? (tabuOwners.trim().toLowerCase() === arnPayer.trim().toLowerCase() ? 'ok' : 'warn')
+        : (hasTabu ? 'ok' : 'na') },
+
+    { label:'מחיר עסקה',
+      tabu: '—', arnona: '—', govmap: price>0?priceStr:'—', permit: '—',
+      ts:'na', as:'na', gs: price>0?'warn':'na', ps:'na',
+      row: price>0?'warn':'na' }
+  ];
+
+  if (xrefBody) {
+    xrefBody.innerHTML = rows.map(function(r,i) {
+      var rb = i%2===0?'rgba(255,255,255,0.015)':'';
+      return '<tr style="border-bottom:1px solid rgba(58,58,60,0.7);background:'+rb+';">' +
+        '<td style="padding:8px 11px;font-size:0.78rem;font-weight:600;color:#F5F5F0;white-space:nowrap;">'+r.label+'</td>' +
+        _cell(r.tabu,r.ts) + _cell(r.arnona,r.as) + _cell(r.govmap,r.gs) + _cell(r.permit,r.ps) +
+        _statusCell(r.row) + '</tr>';
+    }).join('');
+  }
+
+  // KPI
+  var t=document.getElementById('dd-kpi-total'), c=document.getElementById('dd-kpi-critical'), w=document.getElementById('dd-kpi-warnings');
+  if(t) t.textContent=critCount+warnCount; if(c) c.textContent=critCount; if(w) w.textContent=warnCount;
+}
+
+// ── KPI (ספירת מסמכים, לפני סריקה) ──────────────────────────
+function _ddUpdateKpi() {
+  var el=document.getElementById('dd-kpi-docs'); if(el) el.textContent=_ddDocs.length;
+  if (!_ddScanDone) {
+    var t=document.getElementById('dd-kpi-total'), c=document.getElementById('dd-kpi-critical'), w=document.getElementById('dd-kpi-warnings');
+    if(t) t.textContent='—'; if(c) c.textContent='—'; if(w) w.textContent='—';
+  }
+}
+
+// ── איפוס ─────────────────────────────────────────────────────
+function ddReset() {
+  if (!confirm('לאפס את כל הנתונים?')) return;
+  _ddDocs=[]; _ddScanDone=false;
+  _ddRenderDocList(); _ddDisableScanBtn(); _ddUpdateKpi();
+  var txt=document.getElementById('dd-scan-btn-text'); if(txt) txt.innerHTML='סרוק ונתח מסמכים (AI) 🔍';
+  var btn=document.getElementById('dd-scan-btn'); if(btn){btn.style.border='none';}
+  var fl=document.getElementById('dd-flags-list'); if(fl) fl.innerHTML='';
+  var fe=document.getElementById('dd-flags-empty'); if(fe) fe.style.display='';
+  var fc=document.getElementById('dd-flag-counter'); if(fc){fc.textContent='ממתין לסריקה';fc.style.background='rgba(255,255,255,0.07)';fc.style.color='var(--muted)';}
+  var xw=document.getElementById('dd-xref-wrap'); if(xw) xw.style.display='none';
+  var xe=document.getElementById('dd-xref-empty'); if(xe) xe.style.display='';
+  var xb=document.getElementById('dd-xref-badge'); if(xb) xb.style.display='none';
+  var xbody=document.getElementById('dd-xref-body'); if(xbody) xbody.innerHTML='';
+  ['dd-findings','dd-recommendation','dd-date','dd-examiner'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+}
+
+// ── הדפסת דו"ח ───────────────────────────────────────────────
+function ddPrintReport() {
+  var today    = new Date().toLocaleDateString('he-IL');
+  var examiner = (document.getElementById('dd-examiner')||{}).value||'לא הוזן';
+  var dateVal  = (document.getElementById('dd-date')||{}).value||today;
+  var findings = (document.getElementById('dd-findings')||{}).value||'—';
+  var rec      = (document.getElementById('dd-recommendation')||{}).value;
+  var recMap   = { proceed:'✅ להמשיך בעסקה — ללא מניעה','proceed-caution':'⚠️ להמשיך בזהירות — עם תנאים',pause:'⏸️ להשהות — עד הסדרת ממצאים',abort:'🛑 לא להמשיך — סיכון גבוה' };
+  var recText  = recMap[rec]||'—';
+  var addr     = _ddLS.address || '';
+  var gush     = _ddLS.gush   || '—';
+  var chelka   = _ddLS.chelka || '—';
+  var flagRows = '';
+  document.querySelectorAll('#dd-flags-list > div').forEach(function(el) {
+    var title  = (el.querySelector('span[style*="font-weight:700;color:#F5F5F0"]')||{}).textContent||'';
+    var detail = (el.querySelector('div[style*="color:#9A9A98"]')||{}).textContent||'';
+    // קרא רמה מ-data-level (מהימן יותר מ-borderColor שהדפדפן ממיר ל-rgb)
+    var lvl    = el.getAttribute('data-level') || '';
+    var isCrit = lvl === 'critical';
+    var isWarn = lvl === 'warn' || lvl === 'warning';
+    var level  = isCrit ? 'קריטי 🔴' : isWarn ? 'אזהרה 🟡' : 'תקין 🟢';
+    var rowBg      = isCrit ? '#fff1f2' : isWarn ? '#fffbeb' : 'transparent';
+    var titleColor = isCrit ? '#dc2626' : isWarn ? '#d97706' : '#166534';
+    var levelCell  = isCrit
+      ? '<td style="padding:7px 10px;font-size:8.5pt;font-weight:800;color:#dc2626;background:#fee2e2;border-radius:4px;">'+level+'</td>'
+      : isWarn
+        ? '<td style="padding:7px 10px;font-size:8.5pt;font-weight:800;color:#d97706;background:#fef9c3;border-radius:4px;">'+level+'</td>'
+        : '<td style="padding:7px 10px;font-size:8.5pt;font-weight:800;color:#16a34a;background:#dcfce7;border-radius:4px;">'+level+'</td>';
+    flagRows += '<tr style="border-bottom:1px solid #e5e7eb;background:'+rowBg+';">'
+      + levelCell
+      + '<td style="padding:7px 10px;font-size:8.5pt;font-weight:700;color:'+titleColor+';">'+title+'</td>'
+      + '<td style="padding:7px 10px;font-size:8pt;color:#374151;">'+detail+'</td></tr>';
+  });
+  if (!flagRows) flagRows='<tr><td colspan="3" style="padding:10px;color:#64748b;font-size:8pt;">לא בוצעה סריקה</td></tr>';
+
+  var html='<!DOCTYPE html><html dir="rtl" lang="he"><head><meta charset="UTF-8"/><title>דו"ח בדיקת נאותות</title>' +
+    '<style>body{font-family:Arial,sans-serif;direction:rtl;color:#1e293b;padding:32px;max-width:820px;margin:auto;}h1{font-size:18pt;color:#1e3a5f;border-bottom:3px solid #C5A059;padding-bottom:8px;margin-bottom:20px;}h2{font-size:11pt;color:#1e3a5f;margin-top:22px;margin-bottom:8px;border-right:4px solid #C5A059;padding-right:10px;}table{width:100%;border-collapse:collapse;margin-bottom:16px;}th{background:#1e3a5f;color:#fff;padding:8px 10px;font-size:8.5pt;text-align:right;}.footer{margin-top:32px;text-align:center;font-size:7.5pt;color:#94a3b8;border-top:1px solid #e5e7eb;padding-top:12px;}</style>' +
+    '</head><body><h1>🔍 דו"ח בדיקת נאותות</h1>' +
+    '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;">' +
+      '<div style="flex:1;min-width:130px;padding:10px;background:#f0f4ff;border-radius:8px;border:2px solid #1e3a5f;"><div style="font-size:7.5pt;color:#64748b;">עורך</div><div style="font-size:11pt;font-weight:800;color:#1e3a5f;">'+examiner+'</div></div>' +
+      '<div style="flex:1;min-width:130px;padding:10px;background:#f0f4ff;border-radius:8px;border:2px solid #1e3a5f;"><div style="font-size:7.5pt;color:#64748b;">תאריך</div><div style="font-size:11pt;font-weight:800;color:#1e3a5f;">'+dateVal+'</div></div>' +
+      '<div style="flex:2;min-width:180px;padding:10px;background:#fffbeb;border-radius:8px;border:2px solid #d97706;"><div style="font-size:7.5pt;color:#64748b;">נכס · גוש '+gush+' חלקה '+chelka+'</div><div style="font-size:11pt;font-weight:800;color:#92400e;">'+(addr||'—')+'</div></div>' +
+    '</div>' +
+    '<h2>ממצאי AI — Red Flags</h2><table><thead><tr><th style="width:75px;">רמה</th><th>ממצא</th><th>פירוט</th></tr></thead><tbody>'+flagRows+'</tbody></table>' +
+    '<h2>המלצה</h2><p style="font-size:11pt;font-weight:800;">'+recText+'</p>' +
+    '<h2>הערות</h2><p style="font-size:9.5pt;line-height:1.6;background:#f8fafc;padding:12px;border-radius:6px;border:1px solid #e2e8f0;">'+findings+'</p>' +
+    '<div class="footer">⚖️ LegalFlow OS · Aharoni Legal Platform · '+today+'</div></body></html>';
+
+  var win=window.open('','_blank','width=900,height=700');
+  if (!win) { alert('אפשר שהדפדפן חסם חלון חדש — אפשר חלונות קופצים ונסה שנית.'); return; }
+  win.document.write(html); win.document.close();
+  setTimeout(function(){ win.print(); }, 400);
+}
+
+// stub — תאימות לאחור
+function ddCalc() {}
+
 (function() {
   function updateAllClocks() {
     var now  = new Date();
@@ -9223,6 +10217,7 @@ function printCase() {
   updateAllClocks();
   setInterval(updateAllClocks, 1000);
 })();
+
 </script>
 
 <footer id="global-footer" role="contentinfo">
