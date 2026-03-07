@@ -9700,7 +9700,7 @@ async function ddStartScan() {
 
   try {
     // שליחה לשרת המקומי
-    const response = await fetch('http://127.0.0.1:8000/api/scan-documents', {
+    const response = await fetch('/api/scan-documents', {
       method: 'POST',
       body: formData
     });
